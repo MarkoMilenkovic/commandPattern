@@ -1,6 +1,5 @@
 package command;
 
-
 import domain.Light;
 
 public class LightOnCommand implements Command {

@@ -24,40 +24,37 @@ public class RemoteControl {
         }
     }
 
-    public void setCommand(int commandNum, Command onCommand, Command offCommand) {
-        onCommands[commandNum] = onCommand;
-        offCommands[commandNum] = offCommand;
+    public void setCommand(CommandsEnum commandNum, Command onCommand, Command offCommand) {
+        if (onCommand.getClass().equals(offCommand.getClass())) {
+            throw new IllegalArgumentException("On and off commands must be different.");
+        }
+        if (!onCommand.getClass().equals(commandNum.getOnCommandClass()) ||
+                !offCommand.getClass().equals(commandNum.getOffCommandClass())) {
+            throw new IllegalArgumentException("On and off commands must be complementary.");
+        }
+        onCommands[commandNum.getCommandNum()] = onCommand;
+        offCommands[commandNum.getCommandNum()] = offCommand;
     }
 
-    public void callOnCommand(int commandNum) {
-        onCommands[commandNum].execute();
-        lastCommands = new Command[]{onCommands[commandNum]};
-    }
-
-    public void callOffCommand(int commandNum) {
-        offCommands[commandNum].execute();
-        lastCommands = new Command[]{offCommands[commandNum]};
-    }
-
-    public void callOnCommands(int... commandNum) {
+    public void callOnCommands(CommandsEnum... commandNum) {
         lastCommands = new Command[commandNum.length];
-        for (int num : commandNum) {
-            onCommands[num].execute();
-            lastCommands[num] = onCommands[num];
+        for (CommandsEnum num : commandNum) {
+            onCommands[num.getCommandNum()].execute();
+            lastCommands[num.getCommandNum()] = onCommands[num.getCommandNum()];
         }
     }
 
-    public void callOffCommands(int... commandNum) {
+    public void callOffCommands(CommandsEnum... commandNum) {
         lastCommands = new Command[commandNum.length];
-        for (int num : commandNum) {
-            offCommands[num].execute();
-            lastCommands[num] = offCommands[num];
+        for (CommandsEnum num : commandNum) {
+            offCommands[num.getCommandNum()].execute();
+            lastCommands[num.getCommandNum()] = offCommands[num.getCommandNum()];
         }
     }
 
     public void undo() {
-        for (int i = 0; i < lastCommands.length; i++) {
-            lastCommands[i].undo();
+        for (Command lastCommand : lastCommands) {
+            lastCommand.undo();
         }
     }
 
